@@ -62,15 +62,18 @@ function renderInterface() {
 }
 
 async function logout() {
-    // try {
-    //     currentUser = Moralis.User.current();
-    //     if(!currentUser){
-    //         currentUser = await Moralis.Web3.logout();
-    //     }
-    //     document.getElementById("swap_button").disabled = false;
-    // } catch (error) {
-    //     console.log(error);
-    // }
+    try {
+        if (confirm("Are you sure want to logout?")) {
+            await Moralis.User.logOut();
+          } else {
+            return;
+          }
+        document.getElementById("login_button").style.display = "block";
+        document.getElementById("logout_button").style.display = "none";
+        document.getElementById("swap_button").disabled = true;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 async function login() {
@@ -80,6 +83,8 @@ async function login() {
             currentUser = await Moralis.Web3.authenticate();
         }
         document.getElementById("swap_button").disabled = false;
+        document.getElementById("login_button").style.display = "none";
+        document.getElementById("logout_button").style.display = "block";
     } catch (error) {
         console.log(error);
     }
