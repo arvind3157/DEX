@@ -63,14 +63,35 @@ function renderInterface() {
 
 async function logout() {
     try {
-        if (confirm("Are you sure want to logout?")) {
-            await Moralis.User.logOut();
-          } else {
-            return;
-          }
-        document.getElementById("login_button").style.display = "block";
-        document.getElementById("logout_button").style.display = "none";
-        document.getElementById("swap_button").disabled = true;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will clear your session!",
+            icon: 'warning',
+            showCancelButton: true,
+            position:'top',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout!'
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+                await Moralis.User.logOut();
+                document.getElementById("login_button").style.display = "block";
+                document.getElementById("logout_button").style.display = "none";
+                document.getElementById("swap_button").disabled = true;
+                Swal.fire({
+                    title: 'Logged out!',
+                    text: 'Your session is exprired. Login again to continue!',
+                    icon:'success',
+                    position:'top',
+                })
+            }
+        })
+
+        // if (confirm("Are you sure want to logout?")) {
+        //     await Moralis.User.logOut();
+        //   } else {
+        //     return;
+        //   }
     } catch (error) {
         console.log(error);
     }
@@ -108,7 +129,6 @@ async function getQuote() {
         toTokenAddress: currentTrade.to.address, // The token you want to receive
         amount: amount,
     });
-    console.log(quote);
     document.getElementById("gas_estimate").innerHTML = quote.estimatedGas;
     document.getElementById("to_amount").value = quote.toTokenAmount / (10**quote.toToken.decimals);
 }
@@ -133,7 +153,6 @@ async function trySwap() {
         }
     }
     let receipt = await doSwap(address, amount);
-    alert("Swap complete");
     console.log(receipt);
 }
 
